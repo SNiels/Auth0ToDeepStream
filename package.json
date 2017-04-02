@@ -1,0 +1,23 @@
+{
+  "name": "auth-0-deepstream",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "connect-ensure-login": "^0.1.1",
+    "dotenv": "^4.0.0",
+    "express": "^4.15.2",
+    "express-jwt": "^5.1.0",
+    "express-session": "^1.15.2",
+    "passport": "^0.3.2",
+    "passport-auth0": "^0.6.0",
+    "pug": "^2.0.0-beta11",
+    "request": "^2.81.0"
+  }
+}

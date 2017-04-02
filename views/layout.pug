@@ -1,0 +1,55 @@
+// views/layout.jade
+
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/style.css')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+    script(src="https://cdn.auth0.com/js/lock/10.12.1/lock.min.js")
+  body
+    block content
+    
+    script(src="//code.deepstreamhub.com/js/2.x/deepstream.min.js")
+    script.
+        (function(){
+            var lock = new Auth0Lock('#{env.AUTH0_CLIENT_ID}', '#{env.AUTH0_DOMAIN}');
+            var id_token = localStorage.getItem('id_token');
+            if (!id_token) {
+                lock.on('authenticated', function(authResult) {
+                    getProfile(authResult.idToken);
+                });
+            }else{
+                getProfile(id_token);
+            }
+
+            if(!id_token && location.href.indexOf('access_token') == -1){
+                lock.show();
+            }
+
+
+            function getProfile(idToken){
+                lock.getProfile(idToken, function(error, profile) {
+                    if (error) {
+                        // Remove expired token (if any)
+                        localStorage.removeItem('id_token');
+
+                        // Remove expired profile (if any)
+                        localStorage.removeItem('profile');
+
+                        return alert('There was an error getting the profile: ' + err.message);
+                    }
+                    localStorage.setItem('id_token', idToken);
+                    // Display user information
+                    emitLoginEvent(idToken, profile);
+                });
+            }
+
+            function emitLoginEvent(idToken, profile){
+                var event = new CustomEvent('authenticated', {detail:{idToken: idToken, profile: profile}});
+
+                // Dispatch the event.
+                window.dispatchEvent(event);
+            }
+        })();
+    block scripts

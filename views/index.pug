@@ -1,0 +1,30 @@
+extends layout
+
+block content
+    div#container
+        div#shape
+block scripts
+    script.
+        (function(){
+            window.addEventListener('authenticated', onAuthenticated, false);
+            function onAuthenticated(e){
+                // Connect to deepstreamHub
+                var client = deepstream('wss://154.deepstreamhub.com?apiKey=#{env.DEEPSTREAM_KEY}');
+
+                // Login
+                client.login({
+                    type: 'webhook',
+                    idToken: e.detail.idToken
+                }, function(success, data) {
+                        // Listen to record changes
+                    var shapeElement = document.querySelector( '#shape' );
+                    var record = client.record.getRecord('dsh-demo/bouncy-ball');
+                    record.subscribe(function(data) {
+                        shapeElement.style.left = data.position.x + '%';
+                        shapeElement.style.top = data.position.y + '%';
+                        shapeElement.style.backgroundColor = data.color;
+                        shapeElement.className = data.shape;
+                    });
+                });
+            }
+        })();

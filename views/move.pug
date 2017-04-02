@@ -1,0 +1,29 @@
+extends layout
+
+block scripts
+    script.
+        (function(){
+            window.addEventListener('authenticated', onAuthenticated, false);
+            function onAuthenticated(e){
+                var client = deepstream('wss://154.deepstreamhub.com?apiKey=#{env.DEEPSTREAM_KEY}')
+
+                // Login
+                client.login({
+                    type: 'webhook',
+                    idToken: e.detail.idToken
+                }, function(success, data) {
+                    // Listen to record changes
+                    var record = client.record.getRecord('dsh-demo/bouncy-ball')
+                    emitInterval = setInterval(function() {
+                      record.set({
+                        position: {
+                          x: Math.round(Math.random() * 100),
+                          y: Math.round(Math.random() * 100)
+                        },
+                        color: ['lightblue', 'lightseagreen', 'lightgreen'][Math.floor( Math.random() * 3 )],
+                        shape: ['circle', 'square'][Math.floor( Math.random() * 2 )]
+                      })
+                    }, 1000)
+                });
+            }
+        })();
